@@ -7,10 +7,16 @@
 
 import UIKit
 
+protocol CollectionViewTableViewCellDelegate: AnyObject {
+    func collectionViewTableViewCellDidTapCell(_ cell: CollectionViewTableViewCell, model: TitlePreviewViewModel)
+}
+
 class CollectionViewTableViewCell: UITableViewCell {
 
  static let identifier = "CollectionViewTableViewCell"
     private var titles: [Title] = [Title]()
+    
+    weak var delegate: CollectionViewTableViewCellDelegate?
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -66,10 +72,16 @@ extension CollectionViewTableViewCell: UICollectionViewDelegate, UICollectionVie
         let item = titles[indexPath.row]
         guard let itemName = item.original_title ?? item.original_name else { return }
         
-        APICaller.shared.getMovie(with: itemName + " trailer") { result in
+        APICaller.shared.getMovie(with: itemName + " trailer") { [weak self] result in
             switch result {
             case .success(let element):
-                print()
+            
+                guard let title = self?.titles[indexPath.row], let strongSelf = self else { return }
+                let viewModel = TitlePreviewViewModel(title: title.original_title ?? title.original_name ?? "",
+                                                      youtubeVideo: element,
+                                                      titleOverview: title.overview ?? "")
+                strongSelf.delegate?.collectionViewTableViewCellDidTapCell(strongSelf,
+                                                                 model: viewModel)
             case .failure(let error):
                 print(error.localizedDescription)
             }
