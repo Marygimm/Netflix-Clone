@@ -37,7 +37,7 @@ class UpcomingViewController: UIViewController {
     }
     
     private func fetchUpcoming() {
-        APICaller.shared.getUpcomingTitles { [weak self] result in
+        APICaller.shared.getMovieBySection(url: Sections.Upcoming.url) { [weak self] result in
             switch result {
             case .success(let titles):
                 self?.titles = titles
@@ -45,7 +45,7 @@ class UpcomingViewController: UIViewController {
                     self?.upcomingTable.reloadData()
                 }
             case .failure(let error):
-                print(error.localizedDescription)
+                print(error)
             }
         }
     }

@@ -7,18 +7,25 @@
 
 import UIKit
 
-enum Sections: Int {
-    case TrendingMovies = 0
-    case TrendingTv = 1
-    case Popular = 2
-    case Upcoming = 3
-    case TopRated = 4
-}
 
 class HomeViewController: UIViewController {
     
     //TODO: - Convert this into the viewModel
     let sectionTitles: [String] = ["Trending Movies", "Trending Tv", "Popular", "Upcoming Movies", "Top rated"]
+    
+    private var trendingMovies: [Title] = [Title]() {
+        didSet {
+            reloadData()
+        }
+    }
+    private var trendingTv: [Title] = [Title]() {
+        didSet {
+            reloadData()
+        }
+    }
+    private lazy var popular: [Title] = [Title]()
+    private lazy var upcoming: [Title] = [Title]()
+    private lazy var topRated: [Title] = [Title]()
     
     private var randomTrendingMovie: Title?
     
@@ -31,7 +38,7 @@ class HomeViewController: UIViewController {
         table.dataSource = self
         return table
     }()
-        
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureNavBar()
@@ -40,6 +47,7 @@ class HomeViewController: UIViewController {
         headerView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 450))
         homeFeedTable.tableHeaderView = headerView
         configureHeroHeaderView()
+        fetchData()
     }
     
     override func viewDidLayoutSubviews() {
@@ -47,15 +55,50 @@ class HomeViewController: UIViewController {
         homeFeedTable.frame = view.bounds
     }
     
+    func reloadData() {
+        DispatchQueue.main.async { [weak self] in
+            self?.homeFeedTable.reloadData()
+        }
+    }
+    
+    func fetchData() {
+        Sections.allCases.forEach { element in
+            APICaller.shared.getMovieBySection(url: element.url) { [weak self] result in
+                switch result {
+                case .success(let titles):
+                    self?.populateTitles(element: element, titles: titles)
+                case .failure(let error):
+                    print(error)
+                }
+            }
+        }
+    }
+    
+    private func populateTitles(element: Sections, titles: [Title]) {
+        switch element {
+        case .TrendingMovies:
+            trendingMovies = titles
+        case .TrendingTv:
+            trendingTv = titles
+        case .Popular:
+            popular = titles
+        case .Upcoming:
+            upcoming = titles
+        case .TopRated:
+            topRated = titles
+        }
+    }
+    
     private func configureHeroHeaderView() {
-        APICaller.shared.getTrendingMovies { [weak self] result in
+        
+        APICaller.shared.getMovieBySection(url: Sections.TrendingMovies.url) { [weak self] result in
             switch result {
             case .success(let titles):
                 let selectedTitle = titles.randomElement()
                 self?.randomTrendingMovie = selectedTitle
                 self?.headerView?.configure(with: TitleViewModel(titleName: selectedTitle?.original_title ?? "", posterURL: selectedTitle?.poster_path ?? ""))
             case .failure(let error):
-                print(error.localizedDescription)
+                print(error)
             }
         }
     }
@@ -70,7 +113,7 @@ class HomeViewController: UIViewController {
         ]
         navigationController?.navigationBar.tintColor = .white
     }
-
+    
 }
 
 extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
@@ -87,53 +130,17 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             return UITableViewCell()
         }
         cell.delegate = self
-        switch indexPath.section {
-        case Sections.TrendingMovies.rawValue:
-            APICaller.shared.getTrendingMovies { result in
-                switch result {
-                case .success(let titles):
-                    cell.configure(with: titles)
-                case .failure(let error):
-                    print(error)
-                }
-            }
-        case Sections.TrendingTv.rawValue:
-            APICaller.shared.getTrendingTv { result in
-                switch result {
-                case .success(let titles):
-                    cell.configure(with: titles)
-                case .failure(let error):
-                    print(error)
-                }
-            }
-        case Sections.Popular.rawValue:
-            APICaller.shared.getPopular { result in
-                switch result {
-                case .success(let titles):
-                    cell.configure(with: titles)
-                case .failure(let error):
-                    print(error)
-                }
-            }
-        case Sections.Upcoming.rawValue:
-            APICaller.shared.getUpcomingTitles { result in
-                switch result {
-                case .success(let titles):
-                    cell.configure(with: titles)
-                case .failure(let error):
-                    print(error)
-                }
-            }
-        
-        case Sections.TopRated.rawValue:
-            APICaller.shared.getTopRated { result in
-                switch result {
-                case .success(let titles):
-                    cell.configure(with: titles)
-                case .failure(let error):
-                    print(error)
-                }
-            }
+        switch Sections(rawValue: indexPath.section) {
+        case .TrendingMovies:
+            cell.configure(with: trendingMovies)
+        case .TrendingTv:
+            cell.configure(with: trendingTv)
+        case .Popular:
+            cell.configure(with: popular)
+        case .Upcoming:
+            cell.configure(with: upcoming)
+        case .TopRated:
+            cell.configure(with: topRated)
         default:
             break
         }
