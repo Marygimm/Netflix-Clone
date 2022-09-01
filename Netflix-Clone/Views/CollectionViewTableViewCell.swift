@@ -8,17 +8,17 @@
 import UIKit
 
 protocol CollectionViewTableViewCellDelegate: AnyObject {
-    func collectionViewTableViewCellDidTapCell(_ cell: CollectionViewTableViewCell, model: TitlePreviewViewModel)
+    func collectionViewTableViewCellDidTapCell(_ cell: TitleCollectionViewCell, item: Title)
 }
 
 class CollectionViewTableViewCell: UITableViewCell {
-
- static let identifier = "CollectionViewTableViewCell"
+    
+    static let identifier = "CollectionViewTableViewCell"
     private var titles: [Title] = [Title]()
     
     weak var delegate: CollectionViewTableViewCellDelegate?
     
-    private lazy var collectionView: UICollectionView = {
+    lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: 140, height: 200)
         layout.scrollDirection = .horizontal
@@ -28,7 +28,8 @@ class CollectionViewTableViewCell: UITableViewCell {
         collectionView.dataSource = self
         return collectionView
     }()
-        
+    
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.addSubview(collectionView)
@@ -60,8 +61,8 @@ class CollectionViewTableViewCell: UITableViewCell {
             }
         }
     }
-
-
+    
+    
 }
 
 extension CollectionViewTableViewCell: UICollectionViewDelegate, UICollectionViewDataSource {
@@ -80,23 +81,9 @@ extension CollectionViewTableViewCell: UICollectionViewDelegate, UICollectionVie
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
+        guard let cell = collectionView.cellForItem(at: indexPath) as? TitleCollectionViewCell else { return }
         let item = titles[indexPath.row]
-        guard let itemName = item.original_title ?? item.original_name else { return }
-        
-        APICaller.shared.getMovie(with: itemName + " trailer") { [weak self] result in
-            switch result {
-            case .success(let element):
-            
-                guard let title = self?.titles[indexPath.row], let strongSelf = self else { return }
-                let viewModel = TitlePreviewViewModel(title: title.original_title ?? title.original_name ?? "",
-                                                      youtubeVideo: element,
-                                                      titleOverview: title.overview ?? "")
-                strongSelf.delegate?.collectionViewTableViewCellDidTapCell(strongSelf,
-                                                                 model: viewModel)
-            case .failure(let error):
-                print(error.localizedDescription)
-            }
-        }
+        delegate?.collectionViewTableViewCellDidTapCell(cell, item: item)
     }
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {

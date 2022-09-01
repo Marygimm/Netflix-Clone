@@ -12,7 +12,7 @@ class DownloadsViewController: UIViewController {
     private var titles: [TitleItem] = [TitleItem]()
     
     private lazy var donwloadingTable: UITableView = {
-       let tableView = UITableView()
+        let tableView = UITableView()
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(TitleTableViewCell.self, forCellReuseIdentifier: TitleTableViewCell.identifier)
@@ -59,7 +59,7 @@ extension DownloadsViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-       guard let cell = tableView.dequeueReusableCell(withIdentifier: TitleTableViewCell.identifier, for: indexPath) as? TitleTableViewCell else { return UITableViewCell() }
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: TitleTableViewCell.identifier, for: indexPath) as? TitleTableViewCell else { return UITableViewCell() }
         let title = titles[indexPath.row]
         cell.configure(with: TitleViewModel(titleName: title.original_title ?? title.original_name ?? "Unknow title name", posterURL: title.poster_path ?? ""))
         return cell
@@ -75,24 +75,12 @@ extension DownloadsViewController: UITableViewDelegate, UITableViewDataSource {
         
         guard let titleName = title.original_title ?? title.original_name else { return }
         
-        APICaller.shared.getMovie(with: titleName) { [weak self] result in
-            switch result {
-            case .success(let element):
-            
-               guard let strongSelf = self else { return }
-                DispatchQueue.main.async {
-                    let viewController = TitlePreviewViewController()
-                    let viewModel = TitlePreviewViewModel(title: title.original_title ?? title.original_name ?? "",
-                                                          youtubeVideo: element,
-                                                          titleOverview: title.overview ?? "")
-                    viewController.configure(with: viewModel)
-                    strongSelf.navigationController?.pushViewController(viewController, animated: true)
-                }
-                
-            case .failure(let error):
-                print(error.localizedDescription)
-            }
-        }
+        let viewController = TitlePreviewViewController()
+        
+        viewController.fetchMovie(with: titleName, overview: title.overview ?? "", titleToSearch: titleName)
+        self.navigationController?.pushViewController(viewController, animated: true)
+        
+        
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {

@@ -81,27 +81,10 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let title = titles[indexPath.row]
-        
         guard let titleName = title.original_title ?? title.original_name else { return }
-        
-        APICaller.shared.getMovie(with: titleName) { [weak self] result in
-            switch result {
-            case .success(let element):
-            
-               guard let strongSelf = self else { return }
-                DispatchQueue.main.async {
-                    let viewController = TitlePreviewViewController()
-                    let viewModel = TitlePreviewViewModel(title: title.original_title ?? title.original_name ?? "",
-                                                          youtubeVideo: element,
-                                                          titleOverview: title.overview ?? "")
-                    viewController.configure(with: viewModel)
-                    strongSelf.navigationController?.pushViewController(viewController, animated: true)
-                }
-                
-            case .failure(let error):
-                print(error.localizedDescription)
-            }
-        }
+        let viewController = TitlePreviewViewController()
+        viewController.fetchMovie(with: titleName, overview: title.overview ?? "", titleToSearch: titleName)
+        navigationController?.pushViewController(viewController, animated: true)
     }
     
     
@@ -130,10 +113,11 @@ extension SearchViewController: UISearchResultsUpdating {
 }
 
 extension SearchViewController: SearchResultsViewControllerDelegate {
-    func searchResultsViewControllerDidTapItem(_ viewModel: TitlePreviewViewModel) {
+    func searchResultsViewControllerDidTapItem(_ title: Title) {
+        guard let titleName = title.original_title ?? title.original_name, let overview = title.overview else { return }
         DispatchQueue.main.async { [weak self] in
             let vc = TitlePreviewViewController()
-            vc.configure(with: viewModel)
+            vc.fetchMovie(with: titleName, overview: overview, titleToSearch: titleName)
             self?.navigationController?.pushViewController(vc, animated: true)
         }
     }

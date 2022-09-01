@@ -27,7 +27,7 @@ class HomeViewController: UIViewController {
     private lazy var topRated: [Title] = [Title]()
         
     private var headerView: HeroHeaderUIView?
-    
+            
     private lazy var homeFeedTable: UITableView = {
         let table = UITableView(frame: .zero, style: .grouped)
         table.register(CollectionViewTableViewCell.self, forCellReuseIdentifier: CollectionViewTableViewCell.identifier)
@@ -163,11 +163,18 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 
 
 extension HomeViewController: CollectionViewTableViewCellDelegate {
-    func collectionViewTableViewCellDidTapCell(_ cell: CollectionViewTableViewCell, model: TitlePreviewViewModel) {
+    func collectionViewTableViewCellDidTapCell(_ cell: TitleCollectionViewCell, item: Title) {
+        homeFeedTable.isUserInteractionEnabled = false
+        self.showPreviewViewController(cell: cell, item: item)
+    }
+    
+    private func showPreviewViewController(cell: TitleCollectionViewCell, item: Title) {
+        guard let itemName = item.original_title ?? item.original_name else { return }
         DispatchQueue.main.async { [weak self] in
             let viewController = TitlePreviewViewController()
-            viewController.configure(with: model)
+            viewController.fetchMovie(with: itemName, overview: item.overview ?? "", titleToSearch: itemName + " trailer")
             self?.navigationController?.pushViewController(viewController, animated: true)
+            self?.homeFeedTable.isUserInteractionEnabled = true
         }
     }
     

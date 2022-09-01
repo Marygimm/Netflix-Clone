@@ -13,7 +13,16 @@ class TitlePreviewViewController: UIViewController {
     private let webView: WKWebView = {
         let webView = WKWebView()
         webView.translatesAutoresizingMaskIntoConstraints = false
+        webView.isHidden = true
+        webView.isOpaque = false
+        webView.backgroundColor = UIColor.clear
         return webView
+    }()
+    
+    private let contentWebView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
     }()
     
     private lazy var titleLabel: UILabel = {
@@ -41,14 +50,21 @@ class TitlePreviewViewController: UIViewController {
         button.layer.borderWidth = 1
         button.layer.cornerRadius = 8
         button.layer.masksToBounds = true
+        button.isHidden = true
         return button
     }()
+    
+    var activityIndicator = UIActivityIndicatorView(style: .large)
+    
+
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.addSubview(webView)
+        view.backgroundColor = .black
+        view.addSubview(contentWebView)
+        contentWebView.addSubview(webView)
         view.addSubview(titleLabel)
         view.addSubview(overviewLabel)
         view.addSubview(downloadButton)
@@ -58,8 +74,9 @@ class TitlePreviewViewController: UIViewController {
     }
     
     private func configureConstraints() {
-        let webViewConstraints = [webView.topAnchor.constraint(equalTo: view.topAnchor, constant: 50), webView.leadingAnchor.constraint(equalTo: view.leadingAnchor), webView.trailingAnchor.constraint(equalTo: view.trailingAnchor), webView.heightAnchor.constraint(equalToConstant: 250)]
-                
+        let contentViewConstraints = [contentWebView.topAnchor.constraint(equalTo: view.topAnchor, constant: 50), contentWebView.leadingAnchor.constraint(equalTo: view.leadingAnchor), contentWebView.trailingAnchor.constraint(equalTo: view.trailingAnchor), contentWebView.heightAnchor.constraint(equalToConstant: 250)]
+    
+        
         let titleLabelConstraints = [titleLabel.topAnchor.constraint(equalTo: webView.bottomAnchor, constant: 20), titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20)]
         
         let overviewLabelConstraints = [overviewLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 15), overviewLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20), overviewLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
@@ -71,19 +88,47 @@ class TitlePreviewViewController: UIViewController {
                                          downloadButton.heightAnchor.constraint(equalToConstant: 40)
         ]
         
-        NSLayoutConstraint.activate(webViewConstraints)
+        NSLayoutConstraint.activate(contentViewConstraints)
         NSLayoutConstraint.activate(titleLabelConstraints)
         NSLayoutConstraint.activate(overviewLabelConstraints)
         NSLayoutConstraint.activate(downloadButtonConstraints)
-
-    }
-    
-    func configure(with model: TitlePreviewViewModel) {
-        titleLabel.text = model.title
-        overviewLabel.text = model.titleOverview
         
-        guard let id = model.youtubeVideo.id.videoId, let url = URL(string: "https://www.youtube.com/embed/\(id)") else { return }
-        webView.load(URLRequest(url: url))
+        webView.setFillingConstraints(in: contentWebView)
+        
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        contentWebView.addSubview(activityIndicator)
+        activityIndicator.color = .white
+        activityIndicator.centerXAnchor.constraint(equalTo: contentWebView.centerXAnchor).isActive = true
+        activityIndicator.centerYAnchor.constraint(equalTo: contentWebView.centerYAnchor).isActive = true
+        activityIndicator.startAnimating()
+        
     }
     
-}
+    
+    
+    func fetchMovie(with title: String, overview: String, titleToSearch: String) {
+        self.titleLabel.text = title
+        self.overviewLabel.text = overview
+        APICaller.shared.getMovie(with: titleToSearch) { [weak self] result in
+            switch result {
+            case .success(let element):
+                let viewModel = TitlePreviewViewModel(youtubeVideo: element)
+                self?.configure(with: viewModel)
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
+    }
+        
+        func configure(with model: TitlePreviewViewModel) {
+            DispatchQueue.main.async { [weak self] in
+                guard let id = model.youtubeVideo.id.videoId, let url = URL(string: "https://www.youtube.com/embed/\(id)") else { return }
+                self?.webView.load(URLRequest(url: url))
+                self?.webView.isHidden = false
+                self?.downloadButton.isHidden = false
+                self?.activityIndicator.stopAnimating()
+                
+            }
+        }
+        
+    }
