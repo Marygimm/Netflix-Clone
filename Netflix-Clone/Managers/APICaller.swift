@@ -36,6 +36,23 @@ enum Sections: Int, CaseIterable {
             return URL(string: "\(Constants.baseURL)3/movie/top_rated?api_key=\(Constants.apiKey)&language=en-US&page=1")
         }
     }
+
+    var title: String {
+        var title = ""
+        switch self {
+        case .TrendingMovies:
+            title = "Trending Movies"
+        case .TrendingTv:
+            title = "Trending Tv"
+        case .Popular:
+            title = "Popular"
+        case .Upcoming:
+            title = "Upcoming Movies"
+        case .TopRated:
+            title = "Top rated"
+        }
+        return title
+    }
 }
 
 enum APIError: Error {

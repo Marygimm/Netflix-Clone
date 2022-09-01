@@ -11,10 +11,9 @@ import UIKit
 class HomeViewController: UIViewController {
     
     //TODO: - Convert this into the viewModel
-    let sectionTitles: [String] = ["Trending Movies", "Trending Tv", "Popular", "Upcoming Movies", "Top rated"]
-    
     private var trendingMovies: [Title] = [Title]() {
         didSet {
+            configureHeroHeaderView()
             reloadData()
         }
     }
@@ -26,9 +25,7 @@ class HomeViewController: UIViewController {
     private lazy var popular: [Title] = [Title]()
     private lazy var upcoming: [Title] = [Title]()
     private lazy var topRated: [Title] = [Title]()
-    
-    private var randomTrendingMovie: Title?
-    
+        
     private var headerView: HeroHeaderUIView?
     
     private lazy var homeFeedTable: UITableView = {
@@ -46,7 +43,6 @@ class HomeViewController: UIViewController {
         view.addSubview(homeFeedTable)
         headerView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 450))
         homeFeedTable.tableHeaderView = headerView
-        configureHeroHeaderView()
         fetchData()
     }
     
@@ -90,17 +86,8 @@ class HomeViewController: UIViewController {
     }
     
     private func configureHeroHeaderView() {
-        
-        APICaller.shared.getMovieBySection(url: Sections.TrendingMovies.url) { [weak self] result in
-            switch result {
-            case .success(let titles):
-                let selectedTitle = titles.randomElement()
-                self?.randomTrendingMovie = selectedTitle
-                self?.headerView?.configure(with: TitleViewModel(titleName: selectedTitle?.original_title ?? "", posterURL: selectedTitle?.poster_path ?? ""))
-            case .failure(let error):
-                print(error)
-            }
-        }
+        let selectedTitle = trendingMovies.randomElement()
+        self.headerView?.configure(with: TitleViewModel(titleName: selectedTitle?.original_title ?? "", posterURL: selectedTitle?.poster_path ?? ""))
     }
     
     private func configureNavBar() {
@@ -118,7 +105,7 @@ class HomeViewController: UIViewController {
 
 extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return sectionTitles.count
+        return Sections.allCases.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -156,7 +143,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return sectionTitles[section]
+        return Sections(rawValue: section)?.title
     }
     
     func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
