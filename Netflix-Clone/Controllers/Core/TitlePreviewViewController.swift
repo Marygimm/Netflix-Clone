@@ -8,7 +8,22 @@
 import UIKit
 import WebKit
 
-class TitlePreviewViewController: UIViewController {
+class TitlePreviewViewController: UIViewController, UIScrollViewDelegate {
+    
+    
+    lazy var scrollView: UIScrollView = {
+        let view = UIScrollView(frame: .zero)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .black
+        view.isScrollEnabled = true
+        return view
+    }()
+    
+    private let contentView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
     
     private let webView: WKWebView = {
         let webView = WKWebView()
@@ -56,25 +71,28 @@ class TitlePreviewViewController: UIViewController {
     
     var activityIndicator = UIActivityIndicatorView(style: .large)
     
-
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         view.backgroundColor = .black
-        view.addSubview(contentWebView)
+        view.addSubview(scrollView)
+        scrollView.delegate = self
+        scrollView.addSubview(contentView)
+        contentView.addSubview(contentWebView)
+        contentView.addSubview(titleLabel)
+        contentView.addSubview(overviewLabel)
+        contentView.addSubview(downloadButton)
         contentWebView.addSubview(webView)
-        view.addSubview(titleLabel)
-        view.addSubview(overviewLabel)
-        view.addSubview(downloadButton)
         
         configureConstraints()
         
     }
     
     private func configureConstraints() {
-        let contentViewConstraints = [contentWebView.topAnchor.constraint(equalTo: view.topAnchor, constant: 50), contentWebView.leadingAnchor.constraint(equalTo: view.leadingAnchor), contentWebView.trailingAnchor.constraint(equalTo: view.trailingAnchor), contentWebView.heightAnchor.constraint(equalToConstant: 250)]
+        
+        let scrollViewConstraints = [scrollView.topAnchor.constraint(equalTo: view.topAnchor), scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor), scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor), scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor)]
+        
+        let contentViewConstraints = [contentView.topAnchor.constraint(equalTo: scrollView.topAnchor), contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor)]
+        let contentWebViewConstraints = [contentWebView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 50), contentWebView.leadingAnchor.constraint(equalTo: view.leadingAnchor), contentWebView.trailingAnchor.constraint(equalTo: view.trailingAnchor), contentWebView.heightAnchor.constraint(equalToConstant: 250)]
     
         
         let titleLabelConstraints = [titleLabel.topAnchor.constraint(equalTo: webView.bottomAnchor, constant: 20), titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20)]
@@ -82,17 +100,19 @@ class TitlePreviewViewController: UIViewController {
         let overviewLabelConstraints = [overviewLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 15), overviewLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20), overviewLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
         ]
         
-        let downloadButtonConstraints = [downloadButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+        let downloadButtonConstraints = [downloadButton.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
                                          downloadButton.topAnchor.constraint(equalTo: overviewLabel.bottomAnchor, constant: 25),
                                          downloadButton.widthAnchor.constraint(equalToConstant: 140),
-                                         downloadButton.heightAnchor.constraint(equalToConstant: 40)
-        ]
-        
+                                         downloadButton.heightAnchor.constraint(equalToConstant: 40), downloadButton.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: -20)
+      ]
+        NSLayoutConstraint.activate(scrollViewConstraints)
+
         NSLayoutConstraint.activate(contentViewConstraints)
+        NSLayoutConstraint.activate(contentWebViewConstraints)
         NSLayoutConstraint.activate(titleLabelConstraints)
         NSLayoutConstraint.activate(overviewLabelConstraints)
         NSLayoutConstraint.activate(downloadButtonConstraints)
-        
+
         webView.setFillingConstraints(in: contentWebView)
         
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
