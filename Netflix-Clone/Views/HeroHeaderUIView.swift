@@ -29,8 +29,6 @@ class HeroHeaderUIView: UIView {
        let button = UIButton()
         button.setTitle("Play", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.layer.borderColor = UIColor.black.cgColor
-        button.layer.borderWidth = 1
         button.backgroundColor = .red
         button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(playButtonTapped), for: .touchUpInside)
@@ -43,8 +41,6 @@ class HeroHeaderUIView: UIView {
        let button = UIButton()
         button.setTitle("Download", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.layer.borderColor = UIColor.black.cgColor
-        button.layer.borderWidth = 1
         button.backgroundColor = .red
         button.translatesAutoresizingMaskIntoConstraints = false
         button.isUserInteractionEnabled = true
@@ -92,7 +88,6 @@ class HeroHeaderUIView: UIView {
     }
     
     @objc func downloadButtonTapped() {
-        print("HERE")
         guard let item = item else {
             return
         }
@@ -100,7 +95,6 @@ class HeroHeaderUIView: UIView {
     }
     
     @objc func playButtonTapped() {
-        print("HERE")
         guard let item = item else {
             return
         }
