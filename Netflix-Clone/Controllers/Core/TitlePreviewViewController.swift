@@ -87,12 +87,17 @@ class TitlePreviewViewController: UIViewController, UIScrollViewDelegate {
         
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        self.navigationController?.navigationBar.prefersLargeTitles = false
+        self.navigationController?.navigationItem.largeTitleDisplayMode = .never
+    }
+    
     private func configureConstraints() {
         
         let scrollViewConstraints = [scrollView.topAnchor.constraint(equalTo: view.topAnchor), scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor), scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor), scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor)]
         
         let contentViewConstraints = [contentView.topAnchor.constraint(equalTo: scrollView.topAnchor), contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor)]
-        let contentWebViewConstraints = [contentWebView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 50), contentWebView.leadingAnchor.constraint(equalTo: view.leadingAnchor), contentWebView.trailingAnchor.constraint(equalTo: view.trailingAnchor), contentWebView.heightAnchor.constraint(equalToConstant: 250)]
+        let contentWebViewConstraints = [contentWebView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20), contentWebView.leadingAnchor.constraint(equalTo: view.leadingAnchor), contentWebView.trailingAnchor.constraint(equalTo: view.trailingAnchor), contentWebView.heightAnchor.constraint(equalToConstant: 250)]
     
         
         let titleLabelConstraints = [titleLabel.topAnchor.constraint(equalTo: webView.bottomAnchor, constant: 20), titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20)]
