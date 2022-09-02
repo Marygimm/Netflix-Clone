@@ -86,8 +86,9 @@ class HomeViewController: UIViewController {
     }
     
     private func configureHeroHeaderView() {
-        let selectedTitle = trendingMovies.randomElement()
-        self.headerView?.configure(with: TitleViewModel(titleName: selectedTitle?.original_title ?? "", posterURL: selectedTitle?.poster_path ?? ""))
+        guard let selectedTitle = trendingMovies.randomElement() else { return }
+        self.headerView?.configure(with: selectedTitle)
+        self.headerView?.delegate = self
     }
     
     private func configureNavBar() {
@@ -165,10 +166,10 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 extension HomeViewController: CollectionViewTableViewCellDelegate {
     func collectionViewTableViewCellDidTapCell(_ cell: TitleCollectionViewCell, item: Title) {
         homeFeedTable.isUserInteractionEnabled = false
-        self.showPreviewViewController(cell: cell, item: item)
+        self.showPreviewViewController(item: item)
     }
     
-    private func showPreviewViewController(cell: TitleCollectionViewCell, item: Title) {
+    private func showPreviewViewController(item: Title) {
         guard let itemName = item.original_title ?? item.original_name else { return }
         DispatchQueue.main.async { [weak self] in
             let viewController = TitlePreviewViewController()
@@ -177,5 +178,25 @@ extension HomeViewController: CollectionViewTableViewCellDelegate {
             self?.homeFeedTable.isUserInteractionEnabled = true
         }
     }
+    
+}
+
+
+extension HomeViewController: HeroHeaderUIViewDelegate {
+    func playButtonTapped(_ item: Title) {
+        showPreviewViewController(item: item)
+    }
+    
+    func donwloadButtonTapped(_ item: Title) {
+        DataPersistanceManager.shared.downloadTitleWith(model: item) { result in
+            switch result {
+            case .success():
+                NotificationCenter.default.post(Notification(name: NSNotification.Name("downloaded")))
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
     
 }

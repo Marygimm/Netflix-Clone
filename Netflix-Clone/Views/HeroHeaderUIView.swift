@@ -7,7 +7,14 @@
 
 import UIKit
 
+protocol HeroHeaderUIViewDelegate: AnyObject {
+    func playButtonTapped(_ item: Title)
+    func donwloadButtonTapped(_ item: Title)
+}
+
 class HeroHeaderUIView: UIView {
+    
+    private var item: Title?
     
     private lazy var heroImageView: UIImageView = {
         let imageView = UIImageView()
@@ -16,22 +23,32 @@ class HeroHeaderUIView: UIView {
         return imageView
     }()
     
-    private let playButton: UIButton = {
+    weak var delegate: HeroHeaderUIViewDelegate?
+    
+    private lazy var playButton: UIButton = {
        let button = UIButton()
         button.setTitle("Play", for: .normal)
-        button.layer.borderColor = UIColor.white.cgColor
+        button.setTitleColor(.white, for: .normal)
+        button.layer.borderColor = UIColor.black.cgColor
         button.layer.borderWidth = 1
+        button.backgroundColor = .red
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(playButtonTapped), for: .touchUpInside)
+        button.isUserInteractionEnabled = true
         button.layer.cornerRadius = 5
         return button
     }()
     
-    private let downloadButton: UIButton = {
+    private lazy var downloadButton: UIButton = {
        let button = UIButton()
         button.setTitle("Download", for: .normal)
-        button.layer.borderColor = UIColor.white.cgColor
+        button.setTitleColor(.white, for: .normal)
+        button.layer.borderColor = UIColor.black.cgColor
         button.layer.borderWidth = 1
+        button.backgroundColor = .red
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.isUserInteractionEnabled = true
+        button.addTarget(self, action: #selector(downloadButtonTapped), for: .touchUpInside)
         button.layer.cornerRadius = 5
         return button
     }()
@@ -74,8 +91,25 @@ class HeroHeaderUIView: UIView {
 
     }
     
-    func configure(with model: TitleViewModel) {
-        guard let url = URL(string: "https://image.tmdb.org/t/p/w500/\(model.posterURL)") else { return }
+    @objc func downloadButtonTapped() {
+        print("HERE")
+        guard let item = item else {
+            return
+        }
+        delegate?.donwloadButtonTapped(item)
+    }
+    
+    @objc func playButtonTapped() {
+        print("HERE")
+        guard let item = item else {
+            return
+        }
+        delegate?.playButtonTapped(item)
+    }
+    
+    func configure(with item: Title) {
+        self.item = item
+        guard let posterURL = item.poster_path, let url = URL(string: "https://image.tmdb.org/t/p/w500/\(posterURL)") else { return }
         heroImageView.sd_setImage(with: url)
     }
     
