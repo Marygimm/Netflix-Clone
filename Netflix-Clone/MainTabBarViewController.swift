@@ -11,9 +11,8 @@ class MainTabBarViewController: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        overrideUserInterfaceStyle = .dark
         self.view.backgroundColor = .black
-        let viewController = UINavigationController(rootViewController: HomeViewController())
+        let viewController = UINavigationController(rootViewController: HomeViewController(viewModel: HomeViewModel(client: APICaller.shared)))
         let viewController2 = UINavigationController(rootViewController: UpcomingViewController())
         let viewController3 = UINavigationController(rootViewController: SearchViewController())
         let viewController4 = UINavigationController(rootViewController: DownloadsViewController())

@@ -15,6 +15,7 @@ struct Constants {
     
 }
 
+
 enum Sections: Int, CaseIterable {
     case TrendingMovies = 0
     case TrendingTv = 1
@@ -59,62 +60,36 @@ enum APIError: Error {
     case failedToGetData
 }
 
-//TODO: - Change all this repeated code
-class APICaller {
+protocol NetworkService {
+    func getMovieBySection(url: URL?, completion: @escaping (Result<[Title], Error>) -> Void)
+    func getDiscoverMovies(completion: @escaping (Result<[Title], Error>) -> Void)
+    func search(with query: String, completion: @escaping (Result<[Title], Error>) -> Void)
+    func getMovie(with query: String, completion: @escaping (Result<VideoElement, Error>) -> Void)
+}
+
+
+class APICaller: NetworkService {
     static let shared = APICaller()
     
     func getMovieBySection(url: URL?, completion: @escaping (Result<[Title], Error>) -> Void) {
         guard let url = url else { return }
         
-        URLSession.shared.dataTask(with: URLRequest(url: url)) { data, _, error in
-            guard let data = data, error == nil else {
-                completion(.failure(APIError.failedToGetData))
-                return
-            }
-            
-            do {
-                let results = try JSONDecoder().decode(TrendingTitleResponse.self, from: data)
-                completion(.success(results.results))
-            } catch {
-                completion(.failure(APIError.failedToGetData))
-            }
-        }.resume()
+        execute(URLRequest(url: url), completion: completion)
+
     }
     
     
     func getDiscoverMovies(completion: @escaping (Result<[Title], Error>) -> Void) {
         guard let url = URL(string: "\(Constants.baseURL)3/discover/movie?api_key=\(Constants.apiKey)&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1&with_watch_monetization_types=flatrate") else { return }
-        URLSession.shared.dataTask(with: URLRequest(url: url)) { data, _, error in
-            guard let data = data, error == nil else {
-                completion(.failure(APIError.failedToGetData))
-                return
-            }
-            
-            do {
-                let results = try JSONDecoder().decode(TrendingTitleResponse.self, from: data)
-                completion(.success(results.results))
-            } catch {
-                completion(.failure(APIError.failedToGetData))
-            }
-        }.resume()
+        execute(URLRequest(url: url), completion: completion)
+        
     }
     
     func search(with query: String, completion: @escaping (Result<[Title], Error>) -> Void) {
         
         guard let query = query.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed), let url = URL(string: "\(Constants.baseURL)3/search/movie?api_key=\(Constants.apiKey)&query=\(query)") else { return }
-        URLSession.shared.dataTask(with: URLRequest(url: url)) { data, _, error in
-            guard let data = data, error == nil else {
-                completion(.failure(APIError.failedToGetData))
-                return
-            }
-            
-            do {
-                let results = try JSONDecoder().decode(TrendingTitleResponse.self, from: data)
-                completion(.success(results.results))
-            } catch {
-                completion(.failure(APIError.failedToGetData))
-            }
-        }.resume()
+        execute(URLRequest(url: url), completion: completion)
+
     }
     
     func getMovie(with query: String, completion: @escaping (Result<VideoElement, Error>) -> Void) {
@@ -140,3 +115,23 @@ class APICaller {
     }
 }
 
+
+extension APICaller {
+    func execute(_ urlRequest: URLRequest, completion:  @escaping (Result<[Title], Error>) -> Void) {
+        let urlSession = URLSession.shared
+        
+        urlSession.dataTask(with: urlRequest) { data, response, error in
+            guard let data = data, error == nil else {
+                completion(.failure(APIError.failedToGetData))
+                return
+            }
+            
+            do {
+                let results = try JSONDecoder().decode(TrendingTitleResponse.self, from: data)
+                completion(.success(results.results))
+            } catch {
+                completion(.failure(APIError.failedToGetData))
+            }
+        }.resume()
+    }
+}

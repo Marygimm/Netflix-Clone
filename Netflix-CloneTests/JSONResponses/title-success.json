@@ -1,0 +1,70 @@
+{
+    "dates": {
+        "maximum": "2022-10-01",
+        "minimum": "2022-09-04"
+    },
+    "page": 1,
+    "results": [
+        {
+            "adult": false,
+            "backdrop_path": "/ugS5FVfCI3RV0ZwZtBV3HAV75OX.jpg",
+            "genre_ids": [
+                16,
+                878,
+                28
+            ],
+            "id": 610150,
+            "original_language": "ja",
+            "original_title": "ドラゴンボール超 スーパーヒーロー",
+            "overview": "The Red Ribbon Army, an evil organization that was once destroyed by Goku in the past, has been reformed by a group of people who have created new and mightier Androids, Gamma 1 and Gamma 2, and seek vengeance against Goku and his family.",
+            "popularity": 16178.059,
+            "poster_path": "/rugyJdeoJm7cSJL1q4jBpTNbxyU.jpg",
+            "release_date": "2022-06-11",
+            "title": "Dragon Ball Super: Super Hero",
+            "video": false,
+            "vote_average": 8,
+            "vote_count": 1061
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/xfNHRI2f5kHGvogxLd0C5sB90L7.jpg",
+            "genre_ids": [
+                16,
+                28,
+                10751,
+                878,
+                35
+            ],
+            "id": 539681,
+            "original_language": "en",
+            "original_title": "DC League of Super-Pets",
+            "overview": "When Superman and the rest of the Justice League are kidnapped, Krypto the Super-Dog must convince a rag-tag shelter pack - Ace the hound, PB the potbellied pig, Merton the turtle and Chip the squirrel - to master their own newfound powers and help him rescue the superheroes.",
+            "popularity": 4932.124,
+            "poster_path": "/r7XifzvtezNt31ypvsmb6Oqxw49.jpg",
+            "release_date": "2022-07-27",
+            "title": "DC League of Super-Pets",
+            "video": false,
+            "vote_average": 7.7,
+            "vote_count": 376
+        },
+        {
+            "adult": false,
+            "backdrop_path": "/AfvIjhDu9p64jKcmohS4hsPG95Q.jpg",
+            "genre_ids": [
+                27,
+                53
+            ],
+            "id": 756999,
+            "original_language": "en",
+            "original_title": "The Black Phone",
+            "overview": "Finney Blake, a shy but clever 13-year-old boy, is abducted by a sadistic killer and trapped in a soundproof basement where screaming is of little use. When a disconnected phone on the wall begins to ring, Finney discovers that he can hear the voices of the killer’s previous victims. And they are dead set on making sure that what happened to them doesn’t happen to Finney.",
+            "popularity": 2394.056,
+            "poster_path": "/lr11mCT85T1JanlgjMuhs9nMht4.jpg",
+            "release_date": "2022-06-22",
+            "title": "The Black Phone",
+            "video": false,
+            "vote_average": 7.9,
+            "vote_count": 2304
+        }
+    ]
+}

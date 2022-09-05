@@ -9,22 +9,8 @@ import UIKit
 
 
 class HomeViewController: UIViewController {
-    
-    //TODO: - Convert this into the viewModel
-    private var trendingMovies: [Title] = [Title]() {
-        didSet {
-            configureHeroHeaderView()
-            reloadData()
-        }
-    }
-    private var trendingTv: [Title] = [Title]() {
-        didSet {
-            reloadData()
-        }
-    }
-    private lazy var popular: [Title] = [Title]()
-    private lazy var upcoming: [Title] = [Title]()
-    private lazy var topRated: [Title] = [Title]()
+        
+    var viewModel: HomeViewModel
         
     private var headerView: HeroHeaderUIView?
             
@@ -36,6 +22,15 @@ class HomeViewController: UIViewController {
         return table
     }()
     
+    init(viewModel: HomeViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureNavBar()
@@ -43,7 +38,7 @@ class HomeViewController: UIViewController {
         view.addSubview(homeFeedTable)
         headerView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 450))
         homeFeedTable.tableHeaderView = headerView
-        fetchData()
+        configureHeroHeaderView()
     }
     
     override func viewDidLayoutSubviews() {
@@ -51,42 +46,8 @@ class HomeViewController: UIViewController {
         homeFeedTable.frame = view.bounds
     }
     
-    func reloadData() {
-        DispatchQueue.main.async { [weak self] in
-            self?.homeFeedTable.reloadData()
-        }
-    }
-    
-    func fetchData() {
-        Sections.allCases.forEach { element in
-            APICaller.shared.getMovieBySection(url: element.url) { [weak self] result in
-                switch result {
-                case .success(let titles):
-                    self?.populateTitles(element: element, titles: titles)
-                case .failure(let error):
-                    print(error)
-                }
-            }
-        }
-    }
-    
-    private func populateTitles(element: Sections, titles: [Title]) {
-        switch element {
-        case .TrendingMovies:
-            trendingMovies = titles
-        case .TrendingTv:
-            trendingTv = titles
-        case .Popular:
-            popular = titles
-        case .Upcoming:
-            upcoming = titles
-        case .TopRated:
-            topRated = titles
-        }
-    }
-    
     private func configureHeroHeaderView() {
-        guard let selectedTitle = trendingMovies.randomElement() else { return }
+        guard let selectedTitle = viewModel.getTitlesBySection(section: Sections.TrendingMovies).randomElement() else { return }
         self.headerView?.configure(with: selectedTitle)
         self.headerView?.delegate = self
     }
@@ -118,20 +79,9 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             return UITableViewCell()
         }
         cell.delegate = self
-        switch Sections(rawValue: indexPath.section) {
-        case .TrendingMovies:
-            cell.configure(with: trendingMovies)
-        case .TrendingTv:
-            cell.configure(with: trendingTv)
-        case .Popular:
-            cell.configure(with: popular)
-        case .Upcoming:
-            cell.configure(with: upcoming)
-        case .TopRated:
-            cell.configure(with: topRated)
-        default:
-            break
-        }
+        
+        cell.configure(with: viewModel.getTitlesBySection(section: Sections.init(rawValue: indexPath.section) ?? Sections.TrendingMovies))
+
         return cell
     }
     
@@ -169,7 +119,7 @@ extension HomeViewController: CollectionViewTableViewCellDelegate {
         self.showPreviewViewController(item: item)
     }
     
-    private func showPreviewViewController(item: Title) {
+    func showPreviewViewController(item: Title) {
         guard let itemName = item.original_title ?? item.original_name else { return }
         DispatchQueue.main.async { [weak self] in
             let viewController = TitlePreviewViewController()
