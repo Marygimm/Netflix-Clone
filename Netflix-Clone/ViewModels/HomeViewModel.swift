@@ -18,6 +18,7 @@ class HomeViewModel {
     
     init(client: NetworkService) {
         self.client = client
+        fetchData()
     }
     
     

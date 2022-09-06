@@ -12,9 +12,10 @@ class HomeViewController: UIViewController {
         
     var viewModel: HomeViewModel
         
-    private var headerView: HeroHeaderUIView?
+    var headerView: HeroHeaderUIView?
+    var selectedTilte: Title?
             
-    private lazy var homeFeedTable: UITableView = {
+    lazy var homeFeedTable: UITableView = {
         let table = UITableView(frame: .zero, style: .grouped)
         table.register(CollectionViewTableViewCell.self, forCellReuseIdentifier: CollectionViewTableViewCell.identifier)
         table.delegate = self
@@ -22,9 +23,12 @@ class HomeViewController: UIViewController {
         return table
     }()
     
+    
     init(viewModel: HomeViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+        headerView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: 450))
+        
     }
     
     required init?(coder: NSCoder) {
@@ -36,9 +40,7 @@ class HomeViewController: UIViewController {
         configureNavBar()
         view.backgroundColor = .systemBackground
         view.addSubview(homeFeedTable)
-        headerView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 450))
         homeFeedTable.tableHeaderView = headerView
-        configureHeroHeaderView()
     }
     
     override func viewDidLayoutSubviews() {
@@ -46,9 +48,10 @@ class HomeViewController: UIViewController {
         homeFeedTable.frame = view.bounds
     }
     
-    private func configureHeroHeaderView() {
-        guard let selectedTitle = viewModel.getTitlesBySection(section: Sections.TrendingMovies).randomElement() else { return }
-        self.headerView?.configure(with: selectedTitle)
+    func configureHeroHeaderView() {
+        guard let title = viewModel.getTitlesBySection(section: Sections.TrendingMovies).randomElement() else { return }
+        self.selectedTilte = title
+        self.headerView?.configure(with: title)
         self.headerView?.delegate = self
     }
     
@@ -114,7 +117,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 
 
 extension HomeViewController: CollectionViewTableViewCellDelegate {
-    func collectionViewTableViewCellDidTapCell(_ cell: TitleCollectionViewCell, item: Title) {
+    func collectionViewTableViewCellDidTapCell(item: Title) {
         homeFeedTable.isUserInteractionEnabled = false
         self.showPreviewViewController(item: item)
     }
@@ -147,6 +150,4 @@ extension HomeViewController: HeroHeaderUIViewDelegate {
             }
         }
     }
-    
-    
 }

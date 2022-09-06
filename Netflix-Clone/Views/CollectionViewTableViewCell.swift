@@ -8,7 +8,7 @@
 import UIKit
 
 protocol CollectionViewTableViewCellDelegate: AnyObject {
-    func collectionViewTableViewCellDidTapCell(_ cell: TitleCollectionViewCell, item: Title)
+    func collectionViewTableViewCellDidTapCell(item: Title)
 }
 
 class CollectionViewTableViewCell: UITableViewCell {
@@ -83,7 +83,7 @@ extension CollectionViewTableViewCell: UICollectionViewDelegate, UICollectionVie
         collectionView.deselectItem(at: indexPath, animated: true)
         guard let cell = collectionView.cellForItem(at: indexPath) as? TitleCollectionViewCell else { return }
         let item = titles[indexPath.row]
-        delegate?.collectionViewTableViewCellDidTapCell(cell, item: item)
+        delegate?.collectionViewTableViewCellDidTapCell(item: item)
     }
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {

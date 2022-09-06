@@ -14,7 +14,7 @@ protocol HeroHeaderUIViewDelegate: AnyObject {
 
 class HeroHeaderUIView: UIView {
     
-    private var item: Title?
+    var item: Title?
     
     private lazy var heroImageView: UIImageView = {
         let imageView = UIImageView()
