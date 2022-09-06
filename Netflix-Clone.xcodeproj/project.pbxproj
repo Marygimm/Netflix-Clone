@@ -22,8 +22,9 @@
 		5742E37228B68AE7008AC99F /* Title.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5742E37128B68AE7008AC99F /* Title.swift */; };
 		5749850428C60D660098B238 /* MockApiCaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5749850328C60D660098B238 /* MockApiCaller.swift */; };
 		5749850A28C625170098B238 /* title-success.json in Resources */ = {isa = PBXBuildFile; fileRef = 5749850928C625170098B238 /* title-success.json */; };
+		5749850D28C76DC50098B238 /* HomeViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5749850C28C76DC50098B238 /* HomeViewControllerTests.swift */; };
 		5762B86528BA677000686FFB /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5762B86428BA677000686FFB /* Extensions.swift */; };
-		57C8362028C252F900A73084 /* Netflix_CloneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C8361F28C252F900A73084 /* Netflix_CloneTests.swift */; };
+		57C8362028C252F900A73084 /* ApiCallerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C8361F28C252F900A73084 /* ApiCallerTests.swift */; };
 		57C8362728C258A900A73084 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C8362628C258A900A73084 /* HomeViewModel.swift */; };
 		57F2B7B428BFAE9400793562 /* TitleCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F2B7B328BFAE9400793562 /* TitleCollectionViewCell.swift */; };
 		57F2B7B728BFAF8400793562 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 57F2B7B628BFAF8400793562 /* SDWebImage */; };
@@ -66,9 +67,10 @@
 		5742E37128B68AE7008AC99F /* Title.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Title.swift; sourceTree = "<group>"; };
 		5749850328C60D660098B238 /* MockApiCaller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockApiCaller.swift; sourceTree = "<group>"; };
 		5749850928C625170098B238 /* title-success.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "title-success.json"; sourceTree = "<group>"; };
+		5749850C28C76DC50098B238 /* HomeViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewControllerTests.swift; sourceTree = "<group>"; };
 		5762B86428BA677000686FFB /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		57C8361D28C252F900A73084 /* Netflix-CloneTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Netflix-CloneTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		57C8361F28C252F900A73084 /* Netflix_CloneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Netflix_CloneTests.swift; sourceTree = "<group>"; };
+		57C8361F28C252F900A73084 /* ApiCallerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiCallerTests.swift; sourceTree = "<group>"; };
 		57C8362628C258A900A73084 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		57F2B7B328BFAE9400793562 /* TitleCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleCollectionViewCell.swift; sourceTree = "<group>"; };
 		57F2B7BA28BFB6D200793562 /* TitleTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleTableViewCell.swift; sourceTree = "<group>"; };
@@ -216,7 +218,8 @@
 			children = (
 				5749850528C61C710098B238 /* JSONResponses */,
 				5749850228C60D570098B238 /* Mocks */,
-				57C8361F28C252F900A73084 /* Netflix_CloneTests.swift */,
+				57C8361F28C252F900A73084 /* ApiCallerTests.swift */,
+				5749850C28C76DC50098B238 /* HomeViewControllerTests.swift */,
 			);
 			path = "Netflix-CloneTests";
 			sourceTree = "<group>";
@@ -378,7 +381,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				57C8362028C252F900A73084 /* Netflix_CloneTests.swift in Sources */,
+				57C8362028C252F900A73084 /* ApiCallerTests.swift in Sources */,
+				5749850D28C76DC50098B238 /* HomeViewControllerTests.swift in Sources */,
 				5749850428C60D660098B238 /* MockApiCaller.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
